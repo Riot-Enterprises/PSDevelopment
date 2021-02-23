@@ -1,5 +1,4 @@
 #!/usr/bin/env pwsh
-#!/usr/bin/env pwsh
 # $TOP = git rev-parse --show-toplevel
 $HOOKSPATH = (resolve-path (git config core.hookspath || Join-Path (git rev-parse --git-dir) Hooks)).Path
 Add-LoggingTarget -Name Console
