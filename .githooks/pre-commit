@@ -21,7 +21,8 @@ If ((${pre-commit.config}.preventMergeConflictCommit)-and (test-ifmerge-marker-c
 }
 
 #Test for code quality
-If (!(test-codequality ${pre-commit.config}.'powershell.ScriptAnalyzer'.severity)){
+If ( (${pre-commit.config}.'powershell.ScriptAnalyzer'.enabled) -and
+    !(test-codequality ${pre-commit.config}.'powershell.ScriptAnalyzer'.severity)){
     Write-Log -Level ERROR -Message 'Cannot commit code that does not meet quality standards'
     Exit 1
 }
