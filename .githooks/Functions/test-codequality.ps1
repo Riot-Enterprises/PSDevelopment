@@ -1,5 +1,5 @@
 function test-codequality {
-    Import-Module -Name PSScriptAnalyzer
+    Import-Module -Name PSScriptAnalyzer -Force
     $output = @()
     foreach ($file in (get-commitfiles | Where-Object { $_.EndsWith('.ps1') -or $_.EndsWith('.psm1') -or $_.EndsWith('.psd1') })) {
         Write-Log -Level DEBUG -Message 'Analyzing {0}' -Arguments $file
