@@ -1,0 +1,5 @@
+filter format-mergemessage {
+    begin {}
+    process {}
+    end {}
+}

@@ -1,0 +1,26 @@
+#!/usr/bin/env pwsh
+#!/usr/bin/env pwsh
+# $TOP = git rev-parse --show-toplevel
+$HOOKSPATH = (resolve-path (git config core.hookspath || Join-Path (git rev-parse --git-dir) Hooks)).Path
+Add-LoggingTarget -Name Console
+# Load Support Scripts
+Write-Log -Level INFO -Message 'Running {0}' -Arguments 'pre-commit'
+Get-ChildItem $HOOKSPATH -Recurse -Include '*.ps1' -Exclude '__*' | ForEach-Object {
+    . $_.FullName
+    Write-Log -Level DEBUG -Message 'Loaded {0}' -Arguments $_.Name
+}
+
+Write-Log -Level INFO -Message 'prepare-commit-msg'
+if ($args[1] -eq 'merge'){
+    $CommitMsg = Get-Content $args[0]
+    if ($CommitMsg -match '''(\w*?)\/([\w-]*?)'''){
+        $tmp = $Matches[0].Replace('''','') -split '/'
+        switch ($tmp[0]) {
+            'feature' { $type = 'feat'; $em = ':sparkles:' }
+            Default {}
+        }
+        $featurename = $tmp[1]
+        $CommitMsg = "$type($featurename): $em $CommitMsg"
+        Set-Content $args[0] $CommitMsg
+    }
+}
