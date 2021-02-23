@@ -1,0 +1,7 @@
+{
+    "preventCommitToMaster": true,
+    "preventMergeConflictCommit": true,
+    "powershell.ScriptAnalyzer": {
+        "severity": "Information"
+    }
+}

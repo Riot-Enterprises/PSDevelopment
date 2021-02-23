@@ -10,18 +10,18 @@ Get-ChildItem $HOOKSPATH -Recurse -Include '*.ps1' -Exclude '__*' | ForEach-Obje
 }
 
 #Prevent direct commits to master
-If (test-ifmaster){
+If ((${pre-commit.config}.preventCommitToMaster) -and (test-ifmaster)){
     Write-Log -Level ERROR -Message 'Cannot commit direct to Master branch'
     Exit 1
 }
 #Prevent commit if Merge Conflicts exist
-If (test-ifmerge-marker-commits){
+If ((${pre-commit.config}.preventMergeConflictCommit)-and (test-ifmerge-marker-commits)){
     Write-Log -Level ERROR -Message 'Cannot commit if Merge Conflicts exist'
     Exit 1
 }
 
 #Test for code quality
-If (!(test-codequality)){
+If (!(test-codequality ${pre-commit.config}.'powershell.ScriptAnalyzer'.severity)){
     Write-Log -Level ERROR -Message 'Cannot commit code that does not meet quality standards'
     Exit 1
 }
@@ -30,4 +30,3 @@ If (!(test-codequality)){
 foreach ($item in get-commitfiles) {
     Write-Log -Level DEBUG -Message "Commiting File {0}" -Arguments $item
 }
-
