@@ -1,0 +1,16 @@
+#!/usr/bin/env pwsh
+# $TOP = git rev-parse --show-toplevel
+$HOOKSPATH = (resolve-path (git config core.hookspath || Join-Path (git rev-parse --git-dir) Hooks)).Path
+Add-LoggingTarget -Name Console
+# Load Support Scripts
+Write-Log -Level INFO -Message 'Running {0}' -Arguments 'commit-msg'
+Get-ChildItem $HOOKSPATH -Recurse -Include '*.ps1' -Exclude '__*' | ForEach-Object {
+    . $_.FullName
+    Write-Log -Level DEBUG -Message 'Loaded {0}' -Arguments $_.Name
+}
+
+Write-Log -Level INFO -Message 'prepare-commit-msg'
+if (!(test-isValidCommitMsg $args[0])){
+    Write-Log -Level ERROR "Commit message $((Get-Content $args[0])[0]) doesn't conform to conventional commits"
+    exit 1
+}
