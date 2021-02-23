@@ -1,0 +1,6 @@
+{
+    "conventionalCommits.scopes": [
+        "Config-Script",
+        "Hook-Functions"
+    ]
+}
