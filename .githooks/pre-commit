@@ -1,0 +1,33 @@
+#!/usr/bin/env pwsh
+# $TOP = git rev-parse --show-toplevel
+$HOOKSPATH = (resolve-path (git config core.hookspath || Join-Path (git rev-parse --git-dir) Hooks)).Path
+Add-LoggingTarget -Name Console
+# Load Support Scripts
+Write-Log -Level INFO -Message 'Running {0}' -Arguments 'pre-commit'
+Get-ChildItem $HOOKSPATH -Recurse -Include '*.ps1' -Exclude '__*' | ForEach-Object {
+    . $_.FullName
+    Write-Log -Level DEBUG -Message 'Loaded {0}' -Arguments $_.Name
+}
+
+#Prevent direct commits to master
+If (test-ifmaster){
+    Write-Log -Level ERROR -Message 'Cannot commit direct to Master branch'
+    Exit 1
+}
+#Prevent commit if Merge Conflicts exist
+If (test-ifmerge-marker-commits){
+    Write-Log -Level ERROR -Message 'Cannot commit if Merge Conflicts exist'
+    Exit 1
+}
+
+#Test for code quality
+If (!(test-codequality)){
+    Write-Log -Level ERROR -Message 'Cannot commit code that does not meet quality standards'
+    Exit 1
+}
+
+#Test Region
+foreach ($item in get-commitfiles) {
+    Write-Log -Level DEBUG -Message "Commiting File {0}" -Arguments $item
+}
+
